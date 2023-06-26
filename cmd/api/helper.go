@@ -9,6 +9,8 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+type envelope map[string]any
+
 // We can then use the ByName() method to get the value of the "id" parameter from
 // the slice. In our project all movies will have a unique positive integer ID, but
 // the value returned by ByName() is always a string. So we try to convert it to a
@@ -29,7 +31,19 @@ func (app *application) readIDParam(r *http.Request) (int64, error) {
 
 func (app *application) writeJSON(w http.ResponseWriter, status int, data any, headers http.Header) error {
 
-	js, err := json.Marshal(data)
+	// js, err := json.Marshal(data)
+
+	// Use the json.MarshalIndent() function instead json.Marshal() so that whitespace is added to the encoded
+	// JSON. Here we use no line prefix ("") and tab indents ("\t") for each element.
+
+	/***
+	While using json.MarshalIndent() is positive from a readability and user-experience point
+	of view, it unfortunately doesn’t come for free. As well as the fact that the responses are
+	now slightly larger in terms of total bytes, the extra work that Go does to add the
+	whitespace has a notable impact on performance.
+	***/
+
+	js, err := json.MarshalIndent(data, "", "\t")
 	if err != nil {
 		return err
 	}

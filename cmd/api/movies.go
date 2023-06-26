@@ -3,6 +3,9 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"time"
+
+	data "greenlight.ASA/internal"
 )
 
 // Add a showMovieHandler for the "GET /v1/movies/:id" endpoint. For now, we retrieve
@@ -16,16 +19,25 @@ func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Reques
 // Add a createMovieHandler for the "POST /v1/movies" endpoint. For now we simply
 // return a plain-text placeholder response.
 func (app *application) showMovieHandler(w http.ResponseWriter, r *http.Request) {
-
-	// When httprouter is parsing a request, any interpolated URL parameters will be
-	// stored in the request context. We can use the ParamsFromContext() function to
-	// retrieve a slice containing these parameter names and values.
-
 	id, err := app.readIDParam(r)
+
 	if err != nil {
 		http.NotFound(w, r)
 		return
 	}
-	fmt.Fprintf(w, "show the details of movie %d\n", id)
+	movie := data.Movie{
+		ID:        id,
+		CreatedAt: time.Now(),
+		Title:     "SIMPA",
+		Year:      2020,
+		Runtime:   120,
+		Genres:    []string{"drama", "cartoon"},
+		Version:   2,
+	}
 
+	err = app.writeJSON(w, http.StatusOK, envelope{"movie": movie}, nil)
+	if err != nil {
+		app.logger.Print(err)
+		http.Error(w, "The server encountered a problem and could not process your request", http.StatusInternalServerError)
+	}
 }
