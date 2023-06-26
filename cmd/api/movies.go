@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	data "greenlight.ASA/internal"
+	data "greenlight.ASA/internal/data"
 )
 
 // Add a showMovieHandler for the "GET /v1/movies/:id" endpoint. For now, we retrieve
